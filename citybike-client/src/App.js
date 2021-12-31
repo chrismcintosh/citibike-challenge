@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
+
+
+// Replace Empty Square with Icon
+const L = require('leaflet');
+const myIcon = L.icon({
+  iconUrl: require('./marker.svg'),
+  iconSize: [16,16],
+});
+
 class App extends Component {
   constructor() {
     super();
@@ -17,7 +26,10 @@ class App extends Component {
   }
   
   componentDidMount() {
+    // Get Data on Load
     this.getData()
+
+    // Get Data on set interval
     setInterval(()=>{
       this.getData()
     },60000)
@@ -28,31 +40,29 @@ class App extends Component {
     const { endpoint } = this.state;
     const socket = socketIOClient(endpoint);
     socket.on("citybike", function(data){
-      const result = JSON.parse(data)
-      console.log("result from socket")
-      console.log(result)
-      self.setState({stations: result.network.stations})
+      self.setState({stations: data.stations})
     })
   }
 
   render() {
     const { stations } = this.state;
-    const position = [this.state.lat, this.state.lng]
     return (
 
       <div className="map">
         <h1> City Bikes in Miami </h1>          
-        <Map className="map-container" center={position} zoom={this.state.zoom}>
+        <Map className="map-container" center={[this.state.lat, this.state.lng]} zoom={this.state.zoom}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {
             stations.length > 0 && stations.map((station)=>(
-              <Marker key={station.id} position={[station.latitude, station.longitude]}>               
+              <Marker icon={myIcon} key={station.id} position={[station.latitude, station.longitude]}>     
+                {console.log(station)}          
                 <Popup>
                   <h2>{station.name}</h2>
                   <h3>Empty slots: {station.empty_slots}</h3>
+                  <h3>Available Bikes: {station.free_bikes}</h3>
                 </Popup>
               </Marker>
             ))
