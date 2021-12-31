@@ -1,17 +1,13 @@
 const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
+const request = require("request")
 const citybikeurl = "http://api.citybik.es/v2/networks/decobike-miami-beach"
 
-
-
 const port = process.env.PORT || 4001;
-const index = require("./routes/index");
+//const index = require("./routes/index");
 const app = express();
-
-
-app.use(index);
-
+//app.use(index);
 const server = http.createServer(app);
 const io = socketIo(server); // < Interesting!
 let interval;
@@ -23,11 +19,10 @@ io.on("connection", socket => {
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
+
+  request(citybikeurl, (err, response, body) => {
+    io.emit("citybike", body)
+  })
 });
 
-
-
 server.listen(port, () => console.log(`Listening on port ${port}`));
-
-
-
