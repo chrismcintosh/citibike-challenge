@@ -21,6 +21,10 @@ The server
 
 `cd /citibike-server`
 
+Then install the server npm packages
+
+`npm install`
+
 This is the node socket.io Server app to start :
 
 `node server.js`
@@ -29,9 +33,13 @@ Then run the client app
 
 `cd /citibike-client`
 
+Then install the client npm packages
+
+`npm install`
+
 That is the client React Application to start :
 
-`npm strat`
+`npm start`
 
 
 
